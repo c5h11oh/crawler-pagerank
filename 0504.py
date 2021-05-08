@@ -103,7 +103,7 @@ def main():
             # timeout, so empty "links"
             links = list()
         except Exception as e:
-            print(e + '; \t' +  e.__cause__ + '. Making empty list')
+            print(str(e) + '; \t' +  str(e.__cause__) + '. Making empty list')
             links = list()
 
         # make the page's link list
