@@ -1,5 +1,6 @@
 import requests
 
-r = requests.get('https://pages.cs.wisc.edu/~remzi/Classes/537/Spring2018/')
-print(r.text)
-pass
+# from urllib.parse import *
+
+r = requests.head('http://pages.cs.wisc.edu/~yxy/')
+print(r.headers)

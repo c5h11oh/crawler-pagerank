@@ -1,0 +1,54 @@
+{
+    "shivaram.org": {
+        "page": {
+            "/": [
+                "https://shivaram.org/#teaching",
+                "https://shivaram.org/#students",
+                "https://shivaram.org/#pubs",
+                "https://shivaram.org/publications/shivaram_cv.pdf",
+                "http://cs.wisc.edu",
+                "https://shivaram.org/projects.html",
+                "https://www.microsoft.com/en-us/research/group/systems-research-group-redmond/",
+                "http://cs.berkeley.edu/~istoica",
+                "https://cs.uchicago.edu/directory/michael-franklin",
+                "http://srg.cs.illinois.edu",
+                "http://pages.cs.wisc.edu/~shivaram/cs537-sp20",
+                "http://pages.cs.wisc.edu/~shivaram/cs537-sp19",
+                "http://pages.cs.wisc.edu/~shivaram/cs744-fa20",
+                "http://pages.cs.wisc.edu/~shivaram/cs744-fa19",
+                "http://pages.cs.wisc.edu/~shivaram/cs744-fa18",
+                "https://arxiv.org/abs/2101.08358",
+                "https://arxiv.org/abs/2010.16248",
+                "https://arxiv.org/abs/2010.03035",
+                "https://arxiv.org/abs/2102.01386",
+                "https://github.com/uw-mad-dash/AutoFreeze",
+                "javascript:void(0);",
+                "https://www.usenix.org/conference/hotstorage20/presentation/kanellis",
+                "https://shivaram.org/publications/themis-nsdi2020.pdf",
+                "https://shivaram.org/publications/blink-mlsys2020.pdf",
+                "https://shivaram.org/publications/sosp2019parity-models.pdf",
+                "https://www.usenix.org/system/files/atc19-jeon.pdf",
+                "https://shivaram.org/publications/hotvid06-final.pdf",
+                "https://shivaram.org/publications/locus-nsdi19.pdf",
+                "https://shivaram.org/publications/asap-osdi18.pdf",
+                "https://shivaram.org/publications/focus-osdi18.pdf",
+                "https://shivaram.org/publications/chi-vldb18.pdf",
+                "https://shivaram.org/publications/shivaram-dissertation.pdf",
+                "https://shivaram.org/publications/drizzle-sosp17.pdf",
+                "https://shivaram.org/publications/pywren-socc17.pdf",
+                "https://arxiv.org/abs/1702.04024",
+                "https://shivaram.org/publications/acc-gs-icml17.pdf",
+                "https://arxiv.org/abs/1701.03863",
+                "https://shivaram.org/publications/keystoneml-icde17.pdf",
+                "https://arxiv.org/abs/1610.09451",
+                "https://shivaram.org/publications/cherrypick-nsdi17.pdf",
+                "https://shivaram.org/publications.html"
+            ]
+        },
+        "degree": 0
+    },
+    "www.shivaram.org": {
+        "page": {},
+        "degree": 0
+    }
+}
