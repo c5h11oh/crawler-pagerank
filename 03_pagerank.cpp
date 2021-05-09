@@ -2,32 +2,37 @@
 #include <fstream>
 #include <sstream>
 #include <assert.h>
+#include <stdio.h>
 #include <cstring>
+#include "mr/mapreduce.h"
 using namespace std;
 
 // constants
 const double b = 0.85; // beta
 const double e = 0.1;  // epsilon
 
+// pagerank vector
+double* pagerank_vector[2];
+
 int main(int argc, char* argv[]) {
-    fstream edges("./edges");
-    if (!edges.is_open()) {
+    FILE* edges = fopen("./edges", "r");
+    if (!edges) {
         cout << "Error: cannot open file \"edges\"";
         return 0;
     }
 
-    string s;
-    stringstream ss(s);
+    size_t line_buf_sz = 768;
+    char* line = (char*)malloc(sizeof(char) * line_buf_sz);
     uint num_nodes = -1;
-    getline(edges, s);
-    getline(edges, s);
-    ss >> num_nodes;
+    getline(&line, &line_buf_sz, edges);
+    getline(&line, &line_buf_sz, edges);
+    num_nodes = stoi(string(line));
     assert(num_nodes > 0);
-    getline(edges, s);
+    getline(&line, &line_buf_sz, edges);
+    free(line);
     
     double num_nodes_reci = 1/(double)num_nodes;
     bool newArray = 1;
-    double** pagerank_vector = new double*[2];
     for (int i = 0; i < 2; ++i) {
         pagerank_vector[i] = new double[num_nodes];
     }
@@ -36,13 +41,12 @@ int main(int argc, char* argv[]) {
         pagerank_vector[0][i] = num_nodes_reci;
     memset(&pagerank_vector[1], 0, sizeof(double) * num_nodes);
 
-    // 
+    // call map reduce recursively
 
     // free memory
     for (int i = 0; i < 2; ++i) {
         delete pagerank_vector[i];
     }
-    delete pagerank_vector;
 
     return 0;
 }

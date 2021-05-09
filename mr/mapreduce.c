@@ -8,7 +8,7 @@
 
 // -------------- Sizes --------------
 #define INITIAL_PARTITION_CAPACITY 8
-#define INPUT_FILE_BUF_CAP 4
+#define INPUT_BUF_CAP 40
 
 // -------------- Pthread Wrappers --------------
 void Pthread_mutex_lock(pthread_mutex_t *mutex){
@@ -190,21 +190,21 @@ void* MR_Reducer(void* arg){
     return NULL;
 }
 
-void MR_Run(int argc, char *argv[], Mapper map, int num_mappers, Reducer reduce, int num_reducers, Partitioner partition){
-    // -------------- 0. Printout current settings. start timer --------------
-    fprintf(stderr, "======================================\n");
-    fprintf(stderr, "INPUT_FILE_BUF_CAP:\t\t%d\n",       INPUT_FILE_BUF_CAP);
-    fprintf(stderr, "Number of Mappers:\t\t%d\n",        num_mappers);
-    fprintf(stderr, "Number of Reducers:\t\t%d\n",       num_reducers);
-    fprintf(stderr, "Number of input files:\t\t%d\n",    argc - 1);
-    // char **fname = argv + 1;
-    // while(*fname != NULL){
-    //     fprintf(stderr, "Filename:\t\t%s\n",             *fname);
-    //     fname++;
-    // }
-    fprintf(stderr, "--------------------------------------\n");
-    clock_t begin = clock();
-    fprintf(stderr, "Start time:\t\t%ld\n", begin);
+void MR_Run(FILE* input, Mapper map, int num_mappers, Reducer reduce, int num_reducers, Partitioner partition){
+    // // -------------- 0. Printout current settings. start timer --------------
+    // fprintf(stderr, "======================================\n");
+    // fprintf(stderr, "INPUT_FILE_BUF_CAP:\t\t%d\n",       INPUT_FILE_BUF_CAP);
+    // fprintf(stderr, "Number of Mappers:\t\t%d\n",        num_mappers);
+    // fprintf(stderr, "Number of Reducers:\t\t%d\n",       num_reducers);
+    // fprintf(stderr, "Number of input files:\t\t%d\n",    argc - 1);
+    // // char **fname = argv + 1;
+    // // while(*fname != NULL){
+    // //     fprintf(stderr, "Filename:\t\t%s\n",             *fname);
+    // //     fname++;
+    // // }
+    // fprintf(stderr, "--------------------------------------\n");
+    // clock_t begin = clock();
+    // fprintf(stderr, "Start time:\t\t%ld\n", begin);
 
     // -------------- 1. Initialization. Create partitions. --------------
     // Initialize global variables
@@ -228,8 +228,8 @@ void MR_Run(int argc, char *argv[], Mapper map, int num_mappers, Reducer reduce,
         partition_arr[i].cur_size = 0;
     }
         // Input buffer
-    input_buffer.file_arr = Malloc(sizeof(char*) * INPUT_FILE_BUF_CAP);
-    input_buffer.capacity = INPUT_FILE_BUF_CAP;
+    input_buffer.file_arr = Malloc(sizeof(char*) * INPUT_BUF_CAP);
+    input_buffer.capacity = INPUT_BUF_CAP;
     input_buffer.cur_size = input_buffer.cur_cons = input_buffer.cur_prod = 0;
     input_buffer.finish = 0; // false
     pthread_mutex_init(&input_buffer.lock, NULL);
@@ -241,18 +241,26 @@ void MR_Run(int argc, char *argv[], Mapper map, int num_mappers, Reducer reduce,
         Pthread_create(&mapper_thread[i], NULL, MR_Mapper, NULL);
 
     // -------------- 3. Build input buffer --------------
-    // TODO: can implement SJF when putting in files
-    for(int i = 1; i < argc; ++i){
+    /**
+     * NOTE: Changed to read line by line of the file "edges" and pass them to mapper 
+     * instead of passing file names as in word count example.
+    **/
+    size_t line_buf_sz = 768;
+    char* line = (char*)malloc(sizeof(char) * line_buf_sz);
+
+    while(getline(&line, &line_buf_sz, input) > 0){
         Pthread_mutex_lock(&input_buffer.lock);
         while(input_buffer.cur_size == input_buffer.capacity)
             Pthread_cond_wait(&input_buffer.wake_producer, &input_buffer.lock);
-        input_buffer.file_arr[input_buffer.cur_prod] = strdup(argv[i]);
+        input_buffer.file_arr[input_buffer.cur_prod] = strdup(line);
         ++input_buffer.cur_prod;
         input_buffer.cur_prod %= input_buffer.capacity;
         ++input_buffer.cur_size;
         Pthread_cond_broadcast(&input_buffer.wake_consumer);
         Pthread_mutex_unlock(&input_buffer.lock);
     }
+    free(line);
+
     // Finish all input creation. Change the variable `finish` to 1. Broadcast.
     Pthread_mutex_lock(&input_buffer.lock);
     input_buffer.finish = 1; // true
@@ -293,9 +301,9 @@ void MR_Run(int argc, char *argv[], Mapper map, int num_mappers, Reducer reduce,
     }
     free(partition_arr);
 
-    // -------------- 0. End timer. Output duration -------------
-    clock_t end = clock();
-    fprintf(stderr, "End time:\t\t%ld\n", end);
-    fprintf(stderr, "Duration in sec:\t%.3f\n", (double)(end - begin) / CLOCKS_PER_SEC);
-    fprintf(stderr, "======================================\n");
+    // // -------------- 0. End timer. Output duration -------------
+    // clock_t end = clock();
+    // fprintf(stderr, "End time:\t\t%ld\n", end);
+    // fprintf(stderr, "Duration in sec:\t%.3f\n", (double)(end - begin) / CLOCKS_PER_SEC);
+    // fprintf(stderr, "======================================\n");
 }
