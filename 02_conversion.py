@@ -37,6 +37,8 @@ for i, fn in enumerate(os.listdir('./crawled_pages/')):
 
 # store the result (edges, file_index_mapping)
 edges_file = open('edges', 'w')
+edges_file.write('// number of nodes:\n' + str(counter) + '\n')
+edges_file.write('// (src#, degree (# of dsts), [dsts]):\n')
 for index in edges.keys():
     edges_file.write(str(index) + ' ' + str(edges[index]['degree']) + ' ')
     for link_index in edges[index]['links']:
