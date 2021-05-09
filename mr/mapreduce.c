@@ -50,7 +50,8 @@ typedef struct __keyinfo__ {
 } Keyinfo;
 
 typedef struct __entry__ {
-    char *key, *value;
+    char *key;
+    double *value;
 } Entry;
 
 typedef struct __partition__ {
@@ -98,7 +99,7 @@ int MR_partition_expand(Partition* ptn){
     // Needs to release the lock afterwards
 }
 
-void MR_Emit(char *key, char *value){
+void MR_Emit(char *key, double *value){ // TODO
     unsigned long partition_number = current_partitioner(key, num_partitions);
     Partition* thisPtn = &partition_arr[partition_number];
     Pthread_mutex_lock(&thisPtn->lock);
@@ -116,7 +117,7 @@ void* MR_sort(void* arg){
     return NULL;
 }
 
-char* MR_DefaultGetter(char *key, int partition_number){
+double* MR_DefaultGetter(char *key, int partition_number){
     Partition* thisPtn = &partition_arr[partition_number];
     Keyinfo* curKin = thisPtn->keyinfo;
     while(curKin && (strcmp(curKin->key, key) != 0))
