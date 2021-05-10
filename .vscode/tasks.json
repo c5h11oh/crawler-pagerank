@@ -11,6 +11,11 @@
             // "options": {
             //     "cwd": "/usr/bin"
             // }
+        },
+        {
+            "label": "make",
+            "type": "shell",
+            "command": "make"
         }
     ]
 }

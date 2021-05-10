@@ -19,6 +19,7 @@ double* pagerank_vector[2];
 uint newArrayNum = 1;
 
 void Map(char *line) {
+    uint arrayNum = (newArrayNum == 1) ? 0 : 1;
     int src, deg;
     char* dst;
     double val;
@@ -30,7 +31,7 @@ void Map(char *line) {
     assert(num != NULL);
     deg = atoi(num);
 
-    val = b * pagerank_vector[newArrayNum ? 0 : 1][src] / deg;
+    val = b * pagerank_vector[arrayNum][src] / deg;
     for (int i = 0; i < deg; ++i) {
         dst = strtok(NULL, " ");
         MR_Emit(strdup(dst), val);
@@ -71,17 +72,17 @@ int main(int argc, char* argv[]) {
     // init value
     for (uint i = 0; i < num_nodes; ++i) 
         pagerank_vector[0][i] = num_nodes_reci;
-    memset(&pagerank_vector[1], 0, sizeof(double) * num_nodes);
+    memset(&pagerank_vector[1][0], 0, sizeof(double) * num_nodes);
 
     // do pagerank calculation recursively until diff is less than e.
     double diff = e + 1;
     do {
-        MR_Run(edges, Map, 10, Reduce, 10, MR_DefaultHashPartition);
+        MR_Run(edges, Map, 1, Reduce, 1, MR_DefaultHashPartition);
         double newSum = 0;
         for(uint i = 0; i < num_nodes; ++i) {
             newSum += pagerank_vector[newArrayNum][i];
         }
-        assert(newSum <= 1);
+        assert(newSum <= 1.01);
         newSum = (1 - newSum) / num_nodes;
         for(uint i = 0; i < num_nodes; ++i) {
             pagerank_vector[newArrayNum][i] += newSum;

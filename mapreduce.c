@@ -8,7 +8,7 @@
 
 // -------------- Sizes --------------
 #define INITIAL_PARTITION_CAPACITY 8
-#define INPUT_BUF_CAP 40
+#define INPUT_BUF_CAP 5
 
 // -------------- Pthread Wrappers --------------
 void Pthread_mutex_lock(pthread_mutex_t *mutex){
