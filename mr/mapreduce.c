@@ -51,7 +51,7 @@ typedef struct __keyinfo__ {
 
 typedef struct __entry__ {
     char *key;
-    double *value;
+    double value;
 } Entry;
 
 typedef struct __partition__ {
@@ -99,14 +99,14 @@ int MR_partition_expand(Partition* ptn){
     // Needs to release the lock afterwards
 }
 
-void MR_Emit(char *key, double *value){ // TODO
+void MR_Emit(char *key, double value){ // TODO
     unsigned long partition_number = current_partitioner(key, num_partitions);
     Partition* thisPtn = &partition_arr[partition_number];
     Pthread_mutex_lock(&thisPtn->lock);
     while(thisPtn->capacity - thisPtn->cur_size < 2)
         MR_partition_expand(thisPtn);
     thisPtn->data[(thisPtn->cur_size)].key = strdup(key);
-    thisPtn->data[(thisPtn->cur_size)++].value = strdup(value);
+    thisPtn->data[(thisPtn->cur_size)++].value = value;
     Pthread_mutex_unlock(&thisPtn->lock);
 }
 
@@ -117,13 +117,13 @@ void* MR_sort(void* arg){
     return NULL;
 }
 
-double* MR_DefaultGetter(char *key, int partition_number){
+double MR_DefaultGetter(char *key, int partition_number){
     Partition* thisPtn = &partition_arr[partition_number];
     Keyinfo* curKin = thisPtn->keyinfo;
     while(curKin && (strcmp(curKin->key, key) != 0))
         curKin = curKin->next;
-    if(!curKin) return NULL; // Key is not found in this partition
-    if(curKin->getterNext >= curKin->end) return NULL; // all values of this key have been iterated
+    if(!curKin) return -1; // Key is not found in this partition
+    if(curKin->getterNext >= curKin->end) return -1; // all values of this key have been iterated
     return thisPtn->data[(curKin->getterNext)++].value;
 }
 
@@ -296,7 +296,7 @@ void MR_Run(FILE* input, Mapper map, int num_mappers, Reducer reduce, int num_re
         }
         for(int j = 0; j < partition_arr[i].cur_size; ++j){
             free(partition_arr[i].data[j].key);
-            free(partition_arr[i].data[j].value);
+            // free(partition_arr[i].data[j].value);
         }
         free(partition_arr[i].data);
     }
