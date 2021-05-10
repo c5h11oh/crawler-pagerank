@@ -90,7 +90,7 @@ int compareEntry(const void *l, const void *r){
 int MR_partition_expand(Partition* ptn){
     // Needs to hold the lock before entering here
     ptn->capacity <<= 1;
-    Entry* tmpEntry = realloc(ptn->data, sizeof(Entry) * ptn->capacity);
+    Entry* tmpEntry = (Entry *)realloc(ptn->data, sizeof(Entry) * ptn->capacity);
     if(tmpEntry == NULL) return -1;
     ptn->data = tmpEntry;
     tmpEntry = tmpEntry + ptn->capacity - 1; // Setting the last `data` entry to be null pointer
@@ -111,7 +111,7 @@ void MR_Emit(char *key, double value){ // TODO
 }
 
 void* MR_sort(void* arg){
-    Partition* thisPtn = arg;
+    Partition* thisPtn = (Partition*)arg;
     if(thisPtn->cur_size == 0) return NULL;
     qsort(thisPtn->data, thisPtn->cur_size, sizeof(Entry), compareEntry);
     return NULL;
@@ -162,18 +162,18 @@ void* MR_Mapper(void* arg){
 }
 
 void* MR_Reducer(void* arg){
-    Partition* thisPtn = arg;
+    Partition* thisPtn = (Partition*)arg;
 
     // Build Keyinfo first
-    thisPtn->keyinfo = Malloc(sizeof(Keyinfo));
+    thisPtn->keyinfo = (Keyinfo*)Malloc(sizeof(Keyinfo));
     Keyinfo* curKin = thisPtn->keyinfo;
     curKin->start = curKin->getterNext = 0;
     curKin->key = thisPtn->data->key;
     curKin->next = NULL;
-    for(int i = 1; i < thisPtn->cur_size; ++i){
+    for(size_t i = 1; i < thisPtn->cur_size; ++i){
         if(strcmp(thisPtn->data[i].key, curKin->key) != 0){
             curKin->end = i;
-            curKin->next = Malloc(sizeof(Keyinfo));
+            curKin->next = (Keyinfo*)Malloc(sizeof(Keyinfo));
             curKin = curKin->next;
             curKin->key = thisPtn->data[i].key;
             curKin->start = curKin->getterNext = i;
@@ -219,17 +219,17 @@ void MR_Run(FILE* input, Mapper map, int num_mappers, Reducer reduce, int num_re
     
     // Initialize global data structures
         // Partition array
-    partition_arr = Malloc(sizeof(Partition) * num_partitions);
+    partition_arr = (Partition*)Malloc(sizeof(Partition) * num_partitions);
             // Each partition in partition array
     for(int i = 0; i < num_partitions; ++i){
         pthread_mutex_init(&partition_arr[i].lock, NULL);
-        partition_arr[i].data = Malloc(sizeof(Entry) * INITIAL_PARTITION_CAPACITY);
+        partition_arr[i].data = (Entry*)Malloc(sizeof(Entry) * INITIAL_PARTITION_CAPACITY);
         partition_arr[i].keyinfo = NULL;
         partition_arr[i].capacity = INITIAL_PARTITION_CAPACITY;
         partition_arr[i].cur_size = 0;
     }
         // Input buffer
-    input_buffer.file_arr = Malloc(sizeof(char*) * INPUT_BUF_CAP);
+    input_buffer.file_arr = (char**)Malloc(sizeof(char*) * INPUT_BUF_CAP);
     input_buffer.capacity = INPUT_BUF_CAP;
     input_buffer.cur_size = input_buffer.cur_cons = input_buffer.cur_prod = 0;
     input_buffer.finish = 0; // false
@@ -294,7 +294,7 @@ void MR_Run(FILE* input, Mapper map, int num_mappers, Reducer reduce, int num_re
             free(Kin);
             Kin = nxtKin;
         }
-        for(int j = 0; j < partition_arr[i].cur_size; ++j){
+        for(size_t j = 0; j < partition_arr[i].cur_size; ++j){
             free(partition_arr[i].data[j].key);
             // free(partition_arr[i].data[j].value);
         }

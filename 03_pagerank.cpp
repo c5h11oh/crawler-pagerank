@@ -7,7 +7,7 @@
 #include <string.h>
 #include <cstring>
 #include <math.h>
-#include "mr/mapreduce.h"
+#include "mapreduce.h"
 using namespace std;
 
 // constants
@@ -69,7 +69,7 @@ int main(int argc, char* argv[]) {
     }
 
     // init value
-    for (int i = 0; i < num_nodes; ++i) 
+    for (uint i = 0; i < num_nodes; ++i) 
         pagerank_vector[0][i] = num_nodes_reci;
     memset(&pagerank_vector[1], 0, sizeof(double) * num_nodes);
 
@@ -78,18 +78,18 @@ int main(int argc, char* argv[]) {
     do {
         MR_Run(edges, Map, 10, Reduce, 10, MR_DefaultHashPartition);
         double newSum = 0;
-        for(int i = 0; i < num_nodes; ++i) {
+        for(uint i = 0; i < num_nodes; ++i) {
             newSum += pagerank_vector[newArrayNum][i];
         }
         assert(newSum <= 1);
         newSum = (1 - newSum) / num_nodes;
-        for(int i = 0; i < num_nodes; ++i) {
+        for(uint i = 0; i < num_nodes; ++i) {
             pagerank_vector[newArrayNum][i] += newSum;
         }
 
         // calc diff
         double newDiff = 0;
-        for(int i = 0; i < num_nodes; ++i) {
+        for(uint i = 0; i < num_nodes; ++i) {
             newDiff += fabs(pagerank_vector[0][i] - pagerank_vector[1][i]);
         }
         diff = newDiff;
@@ -102,7 +102,7 @@ int main(int argc, char* argv[]) {
     // save the result
     fstream pagerank("./pagerank", ios_base::out);
     int arrayNum = (newArrayNum == 1) ? 0 : 1;
-    for(int i = 0; i < num_nodes; ++i) {
+    for(uint i = 0; i < num_nodes; ++i) {
         pagerank << i << " " << pagerank_vector[arrayNum][i] << endl;
     }
 

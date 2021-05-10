@@ -1,9 +1,11 @@
 #ifndef __mapreduce_h__
 #define __mapreduce_h__
 
+#include <stdio.h>
+
 // MR needs to access the pagerank vector, which is in 03_pagerank.cpp
 extern double* pagerank_vector[2];
-extern uint newArrayNum;
+extern unsigned int newArrayNum;
 extern const double b;
 extern const double e;
 
