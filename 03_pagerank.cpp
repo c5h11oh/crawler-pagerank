@@ -13,6 +13,7 @@ const double e = 0.1;  // epsilon
 
 // pagerank vector
 double* pagerank_vector[2];
+uint newArrayNum = 1;
 
 int main(int argc, char* argv[]) {
     FILE* edges = fopen("./edges", "r");
@@ -32,7 +33,7 @@ int main(int argc, char* argv[]) {
     free(line);
     
     double num_nodes_reci = 1/(double)num_nodes;
-    bool newArray = 1;
+    
     for (int i = 0; i < 2; ++i) {
         pagerank_vector[i] = new double[num_nodes];
     }
