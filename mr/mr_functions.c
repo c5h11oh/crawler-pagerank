@@ -8,17 +8,17 @@ void Map(char *line) {
     int src, deg;
     char* dst;
     double val;
-    char* num = strtok(line, ' ');
+    char* num = strtok(line, " ");
     assert(num != NULL);
     src = atoi(num);
 
-    num = strtok(NULL, ' ');
+    num = strtok(NULL, " ");
     assert(num != NULL);
     deg = atoi(num);
 
     val = b * pagerank_vector[newArrayNum ? 0 : 1][src] / deg;
     for (int i = 0; i < deg; ++i) {
-        dst = strtok(NULL, ' ');
+        dst = strtok(NULL, " ");
         MR_Emit(strdup(dst), val);
     }
 }
