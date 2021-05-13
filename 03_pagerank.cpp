@@ -12,13 +12,24 @@ using namespace std;
 
 // constants
 const double b = 0.85; // beta
-const double e = 0.1;  // epsilon
+const double e = 0.01;  // epsilon
 
 // pagerank vector
 double* pagerank_vector[2];
 uint newArrayNum = 1;
-
+    
 void Map(char *line) {
+    {
+        char *c = line;
+        while (*c != '\0') {
+            if (*c == '\n'){
+                *c = '\0';
+                break;
+            }
+            ++c;
+        }
+    }
+
     uint arrayNum = (newArrayNum == 1) ? 0 : 1;
     int src, deg;
     char* dst;
@@ -26,7 +37,7 @@ void Map(char *line) {
     char* num = strtok(line, " ");
     assert(num != NULL);
     src = atoi(num);
-
+    
     num = strtok(NULL, " ");
     assert(num != NULL);
     deg = atoi(num);
@@ -34,7 +45,7 @@ void Map(char *line) {
     val = b * pagerank_vector[arrayNum][src] / deg;
     for (int i = 0; i < deg; ++i) {
         dst = strtok(NULL, " ");
-        MR_Emit(strdup(dst), val);
+        MR_Emit(dst, val);
     }
 }
 
@@ -63,6 +74,9 @@ int main(int argc, char* argv[]) {
     assert(num_nodes > 0);
     getline(&line, &line_buf_sz, edges);
     free(line);
+
+    // remember the current "edges" position for multiple MR passes
+    long startingPoint = ftell(edges);
     
     double num_nodes_reci = 1/(double)num_nodes;
     for (int i = 0; i < 2; ++i) {
@@ -95,8 +109,9 @@ int main(int argc, char* argv[]) {
         }
         diff = newDiff;
 
-        // lastly
+        // lastly: change the next input array; fseek "edges" to the correct position
         newArrayNum = (newArrayNum == 1) ? 0 : 1;
+        fseek(edges, startingPoint, SEEK_SET);
     }
     while(diff >= e);
 
@@ -106,6 +121,9 @@ int main(int argc, char* argv[]) {
     for(uint i = 0; i < num_nodes; ++i) {
         pagerank << i << " " << pagerank_vector[arrayNum][i] << endl;
     }
+    pagerank.close();
+
+    // pagerank.open()
 
     // free memory
     for (int i = 0; i < 2; ++i) {
